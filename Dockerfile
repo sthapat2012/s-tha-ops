@@ -35,5 +35,5 @@ COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 USER nextjs
 EXPOSE 3000
-VOLUME ["/data"]
+# หมายเหตุ: ไม่ใช้ VOLUME ของ Docker — Railway จัดการ persistent volume ที่ /data เอง
 CMD ["node", "server.js"]
