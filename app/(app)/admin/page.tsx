@@ -2,7 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { isAdmin } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { db, getSetting } from "@/lib/db";
+import { isDriveConfigured } from "@/lib/gdrive";
 import BackupButton from "./BackupButton";
 
 export const dynamic = "force-dynamic";
@@ -72,7 +73,10 @@ export default async function AdminHub() {
         <HubCard href="/admin/users" icon="👥" title="จัดการพนักงาน" desc="อนุมัติคำขอ กำหนดสิทธิ์ ระงับ/รีเซ็ตรหัส ตั้ง admin" />
         <HubCard href="/admin/attendance" icon="🕒" title="การลงเวลา & ส่งออก Excel" desc="ดูการลงเวลาของพนักงานทุกคน และส่งออกคิดค่าแรง" />
         <HubCard href="/admin/projects" icon="🏗️" title="โครงการ & รัศมีหน้างาน" desc="จัดการโครงการ แผนงานเฟส และพิกัด geofence" />
-        <BackupButton />
+        <BackupButton
+          driveConfigured={isDriveConfigured()}
+          lastDriveBackup={getSetting("last_drive_backup")}
+        />
       </div>
 
       {/* บันทึกการตรวจสอบ */}

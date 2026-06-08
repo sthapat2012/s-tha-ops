@@ -42,6 +42,11 @@ git push -u origin main
 | `AUTH_SECRET` | (ค่าที่ได้จากขั้นที่ 1) |
 | `DATA_DIR` | `/data` |
 | `NODE_ENV` | `production` |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | (เนื้อหาไฟล์ JSON — ดูภาคผนวก Google Drive) |
+| `GDRIVE_FOLDER_ID` | (id โฟลเดอร์ Drive — ดูภาคผนวก) |
+
+> 2 ตัวล่างเป็น **ตัวเลือก** — ถ้ายังไม่ตั้ง แอปก็ใช้ได้ปกติ แค่ปุ่ม "สำรองขึ้น Google Drive"
+> จะใช้ไม่ได้ (ยังกดดาวน์โหลด ZIP เองได้)
 
 ## ขั้นที่ 6 — เปิดให้เข้าจากภายนอก
 1. แท็บ **Settings → Networking → Generate Domain**
@@ -59,8 +64,31 @@ git push -u origin main
 ---
 
 ## การสำรองข้อมูล
-- เข้าเมนู **จัดการระบบ → สำรองข้อมูล** ดาวน์โหลด ZIP (ฐานข้อมูล + เอกสาร + รูป) เก็บใน Google Drive เป็นระยะ
+- เข้าเมนู **จัดการระบบ → สำรองข้อมูล**
+  - **⬇ ดาวน์โหลด ZIP** — โหลดมาเก็บเอง (ใช้ได้เสมอ)
+  - **☁ ขึ้น Google Drive** — อัปโหลดเข้าโฟลเดอร์ Drive บริษัทอัตโนมัติ (ต้องตั้งค่าในภาคผนวก)
 - แนะนำสำรองทุกสัปดาห์
+
+---
+
+## ภาคผนวก — เชื่อม Google Drive (สำรองอัตโนมัติ)
+ใช้ **Service Account** ของ Google (บัญชีหุ่นยนต์) อัปโหลดไฟล์เข้าโฟลเดอร์ Drive ที่เราแชร์ให้ —
+เซิร์ฟเวอร์ทำงานเองได้โดยไม่ต้องล็อกอินซ้ำ
+
+1. ไปที่ https://console.cloud.google.com → สร้างโปรเจกต์ใหม่ (เช่น "STHA Backup")
+2. เมนู **APIs & Services → Library** → ค้นหา **Google Drive API** → กด **Enable**
+3. **APIs & Services → Credentials → Create Credentials → Service account**
+   - ตั้งชื่อ เช่น `stha-backup` → Create → ข้ามสิทธิ์ → Done
+4. คลิกที่ service account ที่สร้าง → แท็บ **Keys → Add Key → Create new key → JSON** → ดาวน์โหลดไฟล์ JSON มา
+   - **คัดลอกเนื้อหาทั้งไฟล์** ไปใส่ค่า env `GOOGLE_SERVICE_ACCOUNT_JSON` บน Railway
+   - ในไฟล์จะมี `"client_email": "stha-backup@....iam.gserviceaccount.com"` — จำอีเมลนี้ไว้
+5. เปิด Google Drive ของบริษัท → สร้างโฟลเดอร์ เช่น **"STHA Backup"**
+   - คลิกขวา → **แชร์** → ใส่อีเมล service account (จากข้อ 4) → ให้สิทธิ์ **Editor**
+6. เปิดโฟลเดอร์นั้น → ดู URL `https://drive.google.com/drive/folders/XXXXXXXX`
+   - เอา `XXXXXXXX` ไปใส่ค่า env `GDRIVE_FOLDER_ID` บน Railway
+7. Redeploy → เข้าเมนูสำรองข้อมูล → กด **☁ ขึ้น Google Drive** → ไฟล์จะไปโผล่ในโฟลเดอร์
+
+> ความปลอดภัย: service account เห็นเฉพาะไฟล์ที่ตัวเองสร้าง (scope `drive.file`) เข้าถึง Drive อื่นไม่ได้
 
 ## อัปเดตแอปในอนาคต
 แก้โค้ดแล้ว `git push` → Railway redeploy อัตโนมัติ (ข้อมูลใน volume ยังอยู่ครบ)
