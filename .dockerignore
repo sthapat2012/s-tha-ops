@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.tools
+.npmcache
+data
+public/uploads
+*.log
+.env*
+npm-debug.log*
+README.md
+DEPLOY.md

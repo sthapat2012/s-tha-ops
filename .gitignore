@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# S-THA app data
+/data
+/public/uploads
+/.npmcache
+
+# dev tools
+/.tools
