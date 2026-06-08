@@ -23,17 +23,15 @@ ENV NODE_ENV=production \
     PORT=3000 \
     DATA_DIR=/data
 
-# persistent volume mount point (Railway mount /data ทับตรงนี้)
-RUN mkdir -p /data && addgroup --system --gid 1001 nodejs \
-    && adduser --system --uid 1001 nextjs \
-    && chown -R nextjs:nodejs /data
+# จุด mount ของ persistent volume (Railway mount /data ทับตรงนี้)
+# รันเป็น root (ค่าเริ่มต้น) เพื่อให้เขียนไฟล์ลง Railway volume ที่ /data ได้
+RUN mkdir -p /data
 
 # คัดลอกผลลัพธ์ standalone (รวม node_modules ที่จำเป็น เช่น better-sqlite3)
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
 
-USER nextjs
 EXPOSE 3000
 # หมายเหตุ: ไม่ใช้ VOLUME ของ Docker — Railway จัดการ persistent volume ที่ /data เอง
 CMD ["node", "server.js"]
